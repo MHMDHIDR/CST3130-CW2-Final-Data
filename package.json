@@ -1,0 +1,16 @@
+{
+  "name": "cst3130-cw2-final",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "npx ts-node main.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.11.10",
+    "dotenv": "^16.4.1"
+  }
+}
