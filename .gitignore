@@ -26,3 +26,8 @@ dist-ssr
 # node_modules should be ignored in all cases
 node_modules
 **/node_modules/*
+
+# env files
+.env.local
+.env.development.local
+.env
