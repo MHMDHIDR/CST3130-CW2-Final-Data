@@ -1,4 +1,3 @@
-// main.ts
 import { ALPHA_ADVANTAGE_API_URL, convertDatesToUnix } from './utils'
 
 const currencies = ['QAR', 'USD', 'GPB', 'CAD', 'AUD', 'EUD']
@@ -9,9 +8,9 @@ type TimeSeriesEntry = {
 
 const getExchangeRate = async () => {
   try {
-    console.log('Hello World from the main.ts file')
-
+    // Fetch the exchange rate data from the Alpha Advantage API
     const response = await fetch(ALPHA_ADVANTAGE_API_URL(currencies[0], currencies[1]))
+    // Check if the response is OK
     if (response.status === 200) {
       const data = (await response.json()) as {
         'Meta Data': any
@@ -27,9 +26,16 @@ const getExchangeRate = async () => {
 
       const UnixDates = convertDatesToUnix(exchangeRateHighData)
 
-      console.log(UnixDates)
+      const exchangeRateHighDataWithUnixDates = Object.keys(exchangeRateHighData).map(
+        (value, _index) => {
+          return {
+            timestamp: UnixDates[value],
+            high: exchangeRateHighData[value]['2. high']
+          }
+        }
+      )
 
-      return { exchangeRateHighData }
+      return { exchangeRateHighDataWithUnixDates }
     } else {
       console.error('Unable to get exchange rate for Currencies')
       throw new Error('Unable to get exchange rate for Currencies')
