@@ -1,7 +1,12 @@
 import 'dotenv/config'
 
-export type TimeSeriesEntry = {
+export type TimeSeriesEntryType = {
   '2. high': string
+}
+
+export type MetaDataType = {
+  'Meta Data': any
+  'Time Series FX (Daily)': { [date: string]: TimeSeriesEntryType }
 }
 
 export const ALPHA_ADVANTAGE_API_URL = (
