@@ -1,56 +1,62 @@
-import { ALPHA_ADVANTAGE_API_URL, MetaDataType, convertDatesToUnix } from './utils'
-// import fs from 'fs'
+import path from 'path'
+import { ALPHA_ADVANTAGE_API_URL } from './utils'
+import { MetaDataType, currenciesType, exchangeDateType } from './utils/types'
+import fs from 'fs'
+import { uploadData } from './utils/uploadData'
 
-const currencies = ['USD', 'GPB', 'CAD', 'AUD', 'EUD']
+const currencies: currenciesType[] = ['USD', 'AMD', 'PHP', 'OMR', 'SEK']
 const BASE_CURRENCY = 'QAR'
-
-type TimeSeriesEntry = {
-  '2. high': string
-}
-
-const getExchangeRate = async () => {
+const USE_API = true
+const getExchangeRates = async () => {
   try {
-    // Fetch the exchange rate data from the Alpha Advantage API
+    for await (const toCurrency of currencies) {
+      const data = (await getData(toCurrency)) as MetaDataType
+      const timeSeriesFXDaily = data['Time Series FX (Daily)']
 
-    const response = await fetch(ALPHA_ADVANTAGE_API_URL(BASE_CURRENCY, currencies[0]))
+      if (timeSeriesFXDaily && Object.keys(timeSeriesFXDaily).length > 0) {
+        for await (const date of Object.keys(timeSeriesFXDaily)) {
+          const unixTime = new Date(date).getTime()
+          const highValue = timeSeriesFXDaily[date]['2. high']
 
-    console.log('Request to: ', ALPHA_ADVANTAGE_API_URL(BASE_CURRENCY, currencies[0]))
-
-    // Check if the response is OK
-    if (response.status === 200) {
-      const data = (await response.json()) as MetaDataType
-
-      const exchangeRateHighData: { [date: string]: TimeSeriesEntry } = {}
-      Object.keys(data['Time Series FX (Daily)']).forEach(date => {
-        exchangeRateHighData[date] = {
-          '2. high': data['Time Series FX (Daily)'][date]['2. high']
+          // Store data in dynamoDB
+          await uploadData({
+            exTimestamp: unixTime,
+            toCurrency,
+            price: highValue
+          } as exchangeDateType)
         }
-      })
-
-      const UnixDates = convertDatesToUnix(exchangeRateHighData)
-
-      const exchangeRateHighDataWithUnixDates = Object.keys(exchangeRateHighData).map(
-        (value, _index) => {
-          return {
-            timestamp: UnixDates[value],
-            high: exchangeRateHighData[value]['2. high'],
-            fromCurrency: BASE_CURRENCY,
-            toCurrency: currencies[0]
-          }
-        }
-      )
-
-      console.log('Data Size: ', exchangeRateHighDataWithUnixDates.length)
-
-      return { exchangeRateHighDataWithUnixDates }
-    } else {
-      console.error('Unable to get exchange rate for Currencies')
-      throw new Error('Unable to get exchange rate for Currencies')
+      } else {
+        console.error(`No exchange data to --> ${toCurrency}`)
+        console.log('-----------------------------------')
+      }
     }
   } catch (error) {
     console.error(error)
-    throw new Error(`Unable to get exchange rate for Currencies`)
+    throw new Error(`Unable to get exchange rates for currencies`)
   }
 }
 
-getExchangeRate()
+async function getData(toCurrency: currenciesType) {
+  let url = ALPHA_ADVANTAGE_API_URL(BASE_CURRENCY, toCurrency)
+  if (!USE_API) {
+    url = path.join(__dirname, 'data', `${toCurrency}.json`)
+    try {
+      const data = fs.readFileSync(url, 'utf8')
+      return JSON.parse(data) as MetaDataType
+    } catch (e) {
+      console.error(`No exchange data to --> ${toCurrency}`)
+      console.log('-----------------------------------')
+    }
+  } else {
+    const response = await fetch(url)
+    console.log('Request to: ', url)
+    if (response.ok) {
+      return (await response.json()) as MetaDataType
+    } else {
+      console.error(`No exchange data for --> ${toCurrency}`)
+      console.log('-----------------------------------')
+    }
+  }
+}
+
+getExchangeRates()
