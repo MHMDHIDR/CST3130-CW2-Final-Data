@@ -1,7 +1,8 @@
 import { ALPHA_ADVANTAGE_API_URL, MetaDataType, convertDatesToUnix } from './utils'
 // import fs from 'fs'
 
-const currencies = ['QAR', 'USD', 'GPB', 'CAD', 'AUD', 'EUD']
+const currencies = ['USD', 'GPB', 'CAD', 'AUD', 'EUD']
+const BASE_CURRENCY = 'QAR'
 
 type TimeSeriesEntry = {
   '2. high': string
@@ -11,7 +12,9 @@ const getExchangeRate = async () => {
   try {
     // Fetch the exchange rate data from the Alpha Advantage API
 
-    const response = await fetch(ALPHA_ADVANTAGE_API_URL(currencies[0], currencies[1]))
+    const response = await fetch(ALPHA_ADVANTAGE_API_URL(BASE_CURRENCY, currencies[0]))
+
+    console.log('Request to: ', ALPHA_ADVANTAGE_API_URL(BASE_CURRENCY, currencies[0]))
 
     // Check if the response is OK
     if (response.status === 200) {
@@ -31,8 +34,8 @@ const getExchangeRate = async () => {
           return {
             timestamp: UnixDates[value],
             high: exchangeRateHighData[value]['2. high'],
-            fromCurrency: currencies[0],
-            toCurrency: currencies[1]
+            fromCurrency: BASE_CURRENCY,
+            toCurrency: currencies[0]
           }
         }
       )
