@@ -9,7 +9,7 @@ import {
 import { uploadData } from './utils/uploadData'
 import { getUnixTimestamp } from './utils/getUnixTimestamp'
 
-const currencies: currenciesType[] = ['USD', 'AMD', 'PHP', 'GBP', 'OMR']
+const currencies: currenciesType[] = ['USD', 'AMD', 'PHP', 'GBP', 'SGD']
 const BASE_CURRENCY = 'QAR'
 
 async function getExchangeRates() {
@@ -101,7 +101,7 @@ async function getTextData(
 }
 
 // A function to getExchangeRates
-// getExchangeRates()
+getExchangeRates()
 
 // A function to get text data
-getSummaryTextData()
+// getSummaryTextData()

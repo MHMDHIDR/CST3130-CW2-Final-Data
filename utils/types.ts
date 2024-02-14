@@ -1,4 +1,4 @@
-export type currenciesType = 'USD' | 'AMD' | 'PHP' | 'GBP' | 'OMR'
+export type currenciesType = 'USD' | 'AMD' | 'PHP' | 'GBP' | 'SGD'
 
 export type TimeSeriesEntryType = {
   '2. high': string
