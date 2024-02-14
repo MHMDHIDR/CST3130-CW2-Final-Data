@@ -1,17 +1,22 @@
-import path from 'path'
-import { ALPHA_ADVANTAGE_API_URL } from './utils'
-import { MetaDataType, currenciesType, exchangeDateType } from './utils/types'
-import fs from 'fs'
+import { ALPHA_ADVANTAGE_API_URL, ALPHA_ADVANTAGE_NEWS_API_URL } from './utils'
+import {
+  MetaDataType,
+  TextDataType,
+  currenciesType,
+  exchangeDateType,
+  textDataSummaryType
+} from './utils/types'
 import { uploadData } from './utils/uploadData'
+import { getUnixTimestamp } from './utils/getUnixTimestamp'
 
-const currencies: currenciesType[] = ['USD', 'AMD', 'PHP', 'OMR', 'SEK']
+const currencies: currenciesType[] = ['USD', 'AMD', 'PHP', 'GBP', 'OMR']
 const BASE_CURRENCY = 'QAR'
-const USE_API = true
-const getExchangeRates = async () => {
+
+async function getExchangeRates() {
   try {
     for await (const toCurrency of currencies) {
-      const data = (await getData(toCurrency)) as MetaDataType
-      const timeSeriesFXDaily = data['Time Series FX (Daily)']
+      const data = (await getExchangeData(toCurrency)) as MetaDataType
+      const timeSeriesFXDaily = data['Time Series FX (Daily)'] ?? null
 
       if (timeSeriesFXDaily && Object.keys(timeSeriesFXDaily).length > 0) {
         for await (const date of Object.keys(timeSeriesFXDaily)) {
@@ -19,7 +24,7 @@ const getExchangeRates = async () => {
           const highValue = timeSeriesFXDaily[date]['2. high']
 
           // Store data in dynamoDB
-          await uploadData({
+          await uploadData('QRExchangeRates', {
             exTimestamp: unixTime,
             toCurrency,
             price: highValue
@@ -36,27 +41,67 @@ const getExchangeRates = async () => {
   }
 }
 
-async function getData(toCurrency: currenciesType) {
-  let url = ALPHA_ADVANTAGE_API_URL(BASE_CURRENCY, toCurrency)
-  if (!USE_API) {
-    url = path.join(__dirname, 'data', `${toCurrency}.json`)
-    try {
-      const data = fs.readFileSync(url, 'utf8')
-      return JSON.parse(data) as MetaDataType
-    } catch (e) {
-      console.error(`No exchange data to --> ${toCurrency}`)
-      console.log('-----------------------------------')
+async function getSummaryTextData() {
+  try {
+    for await (const toCurrency of currencies) {
+      const data = (await getTextData(toCurrency)) as TextDataType
+
+      const news = data['feed']
+      if (news && news.length > 0) {
+        for await (const article of news) {
+          const { summary, time_published } = article
+
+          // Store data in dynamoDB
+          await uploadData('ExchangesTextData', {
+            Currency: toCurrency,
+            summary,
+            TimePublished: getUnixTimestamp(String(time_published))
+          } as textDataSummaryType)
+        }
+      } else {
+        console.error(`No Text data for --> ${toCurrency}`)
+        console.log('-----------------------------------')
+      }
     }
-  } else {
-    const response = await fetch(url)
-    console.log('Request to: ', url)
-    if (response.ok) {
-      return (await response.json()) as MetaDataType
-    } else {
-      console.error(`No exchange data for --> ${toCurrency}`)
-      console.log('-----------------------------------')
-    }
+  } catch (error) {
+    console.error(error)
+    throw new Error(`Unable to get text data for currencies`)
   }
 }
 
-getExchangeRates()
+async function getExchangeData(toCurrency: currenciesType) {
+  let url = ALPHA_ADVANTAGE_API_URL(BASE_CURRENCY, toCurrency)
+  const response = await fetch(url)
+
+  try {
+    const data = (await response.json()) as MetaDataType
+    return data
+  } catch (e) {
+    console.error(`No exchange data to --> ${toCurrency}`)
+    console.log('-----------------------------------')
+  }
+}
+
+async function getTextData(
+  toCurrency: currenciesType
+): Promise<TextDataType | undefined> {
+  let url = ALPHA_ADVANTAGE_NEWS_API_URL(toCurrency)
+
+  const response = await fetch(url)
+  console.log('Request to: ', url)
+
+  if (response.ok) {
+    return (await response.json()) as TextDataType
+  } else {
+    console.error(`No Text data for --> ${toCurrency}`)
+    console.log('-----------------------------------')
+  }
+
+  return undefined
+}
+
+// A function to getExchangeRates
+// getExchangeRates()
+
+// A function to get text data
+getSummaryTextData()
