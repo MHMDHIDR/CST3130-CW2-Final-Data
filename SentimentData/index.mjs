@@ -22,6 +22,12 @@ export const handler = async event => {
     const toCurrency = record['Currency']['S']
     const summary = record['summary']['S']
 
+    console.log('SentimentData==>', {
+      timePublished,
+      toCurrency,
+      summary
+    })
+
     let response = await axios.post(
       TEXT_PROCESSING_API,
       { summary },
@@ -29,9 +35,15 @@ export const handler = async event => {
     )
     const sentimentData = response.data.sentiment
 
+    console.log(`Sentiment: ${sentimentData}.\nText: "${summary}\n---".`)
+
     const command = new PutCommand({
       TableName: 'QRExchangeSentimentData',
-      Item: { toCurrency, timePublished, sentiment: sentimentData }
+      Item: {
+        TimePublished: timePublished,
+        Currency: toCurrency,
+        sentiment: sentimentData
+      }
     })
 
     // Inserting the sentimentData into ['QRExchangeSentimentData'] table

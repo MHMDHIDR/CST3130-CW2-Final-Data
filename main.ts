@@ -75,4 +75,4 @@ async function getSummaryTextData() {
 // getExchangeRates()
 
 // A function to get text data
-// getSummaryTextData()
+getSummaryTextData()
