@@ -1,6 +1,6 @@
 //Import AWS modules
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
-import { PutCommand, DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb'
+import { DynamoDBDocumentClient, PutCommand } from '@aws-sdk/lib-dynamodb'
 import { exchangeDateType, textDataSummaryType } from './types'
 
 //Create new DocumentClient

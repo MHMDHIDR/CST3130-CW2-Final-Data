@@ -1,4 +1,3 @@
-import { ALPHA_ADVANTAGE_API_URL, ALPHA_ADVANTAGE_NEWS_API_URL } from './utils'
 import {
   MetaDataType,
   TextDataType,
@@ -9,8 +8,11 @@ import {
 import { uploadData } from './utils/uploadData'
 import { getUnixTimestamp } from './utils/getUnixTimestamp'
 
+//---- import get Data functions
+import { getExchangeData } from './utils/getExchangeData'
+import { getTextData } from './utils/getTextData'
+
 const currencies: currenciesType[] = ['USD', 'AMD', 'PHP', 'GBP', 'SGD']
-const BASE_CURRENCY = 'QAR'
 
 async function getExchangeRates() {
   try {
@@ -69,39 +71,8 @@ async function getSummaryTextData() {
   }
 }
 
-async function getExchangeData(toCurrency: currenciesType) {
-  let url = ALPHA_ADVANTAGE_API_URL(BASE_CURRENCY, toCurrency)
-  const response = await fetch(url)
-
-  try {
-    const data = (await response.json()) as MetaDataType
-    return data
-  } catch (e) {
-    console.error(`No exchange data to --> ${toCurrency}`)
-    console.log('-----------------------------------')
-  }
-}
-
-async function getTextData(
-  toCurrency: currenciesType
-): Promise<TextDataType | undefined> {
-  let url = ALPHA_ADVANTAGE_NEWS_API_URL(toCurrency)
-
-  const response = await fetch(url)
-  console.log('Request to: ', url)
-
-  if (response.ok) {
-    return (await response.json()) as TextDataType
-  } else {
-    console.error(`No Text data for --> ${toCurrency}`)
-    console.log('-----------------------------------')
-  }
-
-  return undefined
-}
-
 // A function to getExchangeRates
-getExchangeRates()
+// getExchangeRates()
 
 // A function to get text data
 // getSummaryTextData()
