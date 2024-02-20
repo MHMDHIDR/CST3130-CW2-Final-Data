@@ -2,15 +2,14 @@ import axios from 'axios'
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
 import { DynamoDBDocumentClient, PutCommand } from '@aws-sdk/lib-dynamodb'
 
-// Declare const
-const client = new DynamoDBClient({})
-const documentClient = DynamoDBDocumentClient.from(client)
-const TEXT_PROCESSING_API = `https://kmqvzxr68e.execute-api.us-east-1.amazonaws.com/prod`
-
 export const handler = async event => {
-  console.log('Hello console Log From ProcessSentimentData Lambda ', event)
+  console.log('Hello from ProcessSentimentData')
 
-  // check if there is a new record in the triggered table
+  // Declare const
+  const client = new DynamoDBClient({})
+  const documentClient = DynamoDBDocumentClient.from(client)
+  const TEXT_PROCESSING_API = `https://kmqvzxr68e.execute-api.us-east-1.amazonaws.com/prod`
+
   if (
     event['Records'] &&
     event['Records'].length &&
