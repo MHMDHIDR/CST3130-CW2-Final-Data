@@ -47,8 +47,8 @@ async function getSummaryTextData() {
   try {
     for await (const toCurrency of currencies) {
       const data = (await getTextData(toCurrency)) as TextDataType
-
       const news = data['feed']
+
       if (news && news.length > 0) {
         for await (const article of news) {
           const { summary, time_published } = article

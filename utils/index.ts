@@ -14,7 +14,7 @@ export const ALPHA_ADVANTAGE_API_URL = (
 export const ALPHA_ADVANTAGE_NEWS_API_URL = (secondCurrency: string) => {
   if (!process.env.API_KEY) throw new Error('API_KEY not found')
   // return the API for query between second currency
-  return `https://www.alphavantage.co/query?function=NEWS_SENTIMENT&limit=3&tickers=FOREX:${secondCurrency}&apikey=${process.env.API_KEY}`
+  return `https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers=FOREX:${secondCurrency}&apikey=${process.env.API_KEY}`
 }
 
 /** Calls web service provided for sentiment analysis on CST 3130 
