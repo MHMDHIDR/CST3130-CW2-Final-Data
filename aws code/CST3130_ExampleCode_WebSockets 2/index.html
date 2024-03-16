@@ -43,88 +43,111 @@
         </div>
     </header>
 
-    <div class="container mx-auto mt-8 flex justify-center">
-        <div id="myDiv"></div>
-    </div>
+    <div class="container mx-auto mt-8 justify-center">
+        <div id="myDivPlaceholder" class="min-w-screen">
+            <div role="status"
+                class="min-w-full p-4 border border-gray-300 rounded shadow animate-pulse md:p-6 dark:border-gray-700">
+                <div class="h-2.5 bg-gray-300 rounded-full dark:bg-gray-700 w-32 mb-2.5"></div>
+                <div class="w-48 h-2 mb-10 bg-gray-300 rounded-full dark:bg-gray-700"></div>
+                <div class="flex justify-between items-baseline mt-4">
+                    <div class="w-5 bg-gray-300 rounded-t-lg h-56 dark:bg-gray-700"></div>
+                    <div class="w-5 h-56 ms-6 bg-gray-300 rounded-t-lg dark:bg-gray-700"></div>
+                    <div class="w-5 bg-gray-300 rounded-t-lg h-72 ms-6 dark:bg-gray-700"></div>
+                    <div class="w-5 h-64 ms-6 bg-gray-300 rounded-t-lg dark:bg-gray-700"></div>
+                    <div class="w-5 bg-gray-300 rounded-t-lg h-56 ms-6 dark:bg-gray-700"></div>
+                    <div class="w-5 h-64 ms-6 bg-gray-300 rounded-t-lg dark:bg-gray-700"></div>
+                    <div class="w-5 bg-gray-300 rounded-t-lg h-80 ms-6 dark:bg-gray-700"></div>
+                    <div class="w-5 bg-gray-300 rounded-t-lg h-64 ms-6 dark:bg-gray-700"></div>
+                    <div class="w-5 bg-gray-300 rounded-t-lg h-80 ms-6 dark:bg-gray-700"></div>
+                </div>
+                <span class="sr-only">Loading...</span>
+            </div>
 
-    <div class="container mx-auto mt-8">
-        <h1 class="text-xl font-semibold mb-4">Select Currency</h1>
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-            <button type="button" onclick="sendMessage('USD')"
-                class="currency-button bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded">
-                USD ($)
-            </button>
-            <button type="button" onclick="sendMessage('GBP')"
-                class="currency-button bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded">
-                GBP (£)
-            </button>
-            <button type="button" onclick="sendMessage('AMD')"
-                class="currency-button bg-purple-500 hover:bg-purple-600 text-white font-semibold py-2 px-4 rounded">
-                AMD (֏)
-            </button>
-            <button type="button" onclick="sendMessage('PHP')"
-                class="currency-button bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded">
-                PHP (₱)
-            </button>
-            <button type="button" onclick="sendMessage('SEK')"
-                class="currency-button bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded">
-                SEK (kr)
-            </button>
+            <!-- <div id="myDiv" class="hidden"></div> -->
         </div>
-    </div>
 
-    <script>
-        // WebSocket connection
-        let connection = new WebSocket("wss://z2jcqjqxml.execute-api.us-east-1.amazonaws.com/production");
+        <div class="container mx-auto mt-8">
+            <h1 class="text-xl font-semibold mb-4">Select Currency</h1>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+                <button type="button" onclick="sendMessage('USD')"
+                    class="currency-button bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded">
+                    USD ($)
+                </button>
+                <button type="button" onclick="sendMessage('GBP')"
+                    class="currency-button bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded">
+                    GBP (£)
+                </button>
+                <button type="button" onclick="sendMessage('AMD')"
+                    class="currency-button bg-purple-500 hover:bg-purple-600 text-white font-semibold py-2 px-4 rounded">
+                    AMD (֏)
+                </button>
+                <button type="button" onclick="sendMessage('PHP')"
+                    class="currency-button bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded">
+                    PHP (₱)
+                </button>
+                <button type="button" onclick="sendMessage('SEK')"
+                    class="currency-button bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded">
+                    SEK (kr)
+                </button>
+            </div>
+        </div>
 
-        // On connection open
-        connection.onopen = function (event) {
-            console.log("Connected: " + JSON.stringify(event));
-            // Automatically select USD currency on page load
-            sendMessage('USD');
-        };
+        <script>
+            // WebSocket connection
+            let connection = new WebSocket("wss://z2jcqjqxml.execute-api.us-east-1.amazonaws.com/production");
 
-        // Handle received messages
-        connection.onmessage = function (msg) {
-            let data = JSON.parse(msg.data);
-            console.log(data);
-
-            // Plot data
-            let plotData = [{
-                x: data.x,
-                y: data.y,
-                type: 'line'
-            }];
-
-            Plotly.newPlot('myDiv', plotData);
-        }
-
-        // Log errors
-        connection.onerror = function (error) {
-            console.log("WebSocket Error: " + JSON.stringify(error));
-        }
-
-        // Send message to server with selected currency
-        function sendMessage(currency) {
-            let msgObject = {
-                action: "sendMessage",
-                data: {
-                    currency: currency
-                }
+            // On connection open
+            connection.onopen = function (event) {
+                console.log("Connected: " + JSON.stringify(event));
+                // Automatically select USD currency on page load
+                sendMessage('USD');
             };
 
-            // Send message
-            connection.send(JSON.stringify(msgObject));
+            // Handle received messages
+            connection.onmessage = function (msg) {
+                let data = JSON.parse(msg.data);
+                console.log(data);
 
-            // Log
-            console.log("Message sent: " + JSON.stringify(msgObject));
-        }
+                // Plot data
+                let plotData = [{
+                    x: data.x,
+                    y: data.y,
+                    type: 'line'
+                }];
 
-        // Handle WebSocket connection closure
-        connection.onclose = function (event) {
-            console.log("Connection closed: " + JSON.stringify(event));
-        };
-    </script>
+                // Hide placeholder and show chart
+                document.getElementById('myDivPlaceholder').style.display = 'none';
+                document.getElementById('myDiv').style.display = 'block';
+
+                Plotly.newPlot('myDiv', plotData);
+            }
+
+            // Log errors
+            connection.onerror = function (error) {
+                console.log("WebSocket Error: " + JSON.stringify(error));
+            }
+
+            // Send message to server with selected currency
+            function sendMessage(currency) {
+                let msgObject = {
+                    action: "sendMessage",
+                    data: {
+                        currency: currency
+                    }
+                };
+
+                // Send message
+                connection.send(JSON.stringify(msgObject));
+
+                // Log
+                console.log("Message sent: " + JSON.stringify(msgObject));
+            }
+
+            // Handle WebSocket connection closure
+            connection.onclose = function (event) {
+                console.log("Connection closed: " + JSON.stringify(event));
+            };
+        </script>
 </body>
 
 </html>
