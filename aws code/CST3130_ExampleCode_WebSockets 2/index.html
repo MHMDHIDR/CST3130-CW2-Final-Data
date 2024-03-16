@@ -9,7 +9,7 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="icon" href="./logo.png" type="image/png">
     <style>
-        #myDiv {
+        #myPlotlyDiv {
             width: 95%;
             margin: 0 auto;
         }
@@ -44,27 +44,25 @@
     </header>
 
     <div class="container mx-auto mt-8 justify-center">
-        <div id="myDivPlaceholder" class="min-w-screen">
-            <div role="status"
-                class="min-w-full p-4 border border-gray-300 rounded shadow animate-pulse md:p-6 dark:border-gray-700">
-                <div class="h-2.5 bg-gray-300 rounded-full dark:bg-gray-700 w-32 mb-2.5"></div>
-                <div class="w-48 h-2 mb-10 bg-gray-300 rounded-full dark:bg-gray-700"></div>
-                <div class="flex justify-between items-baseline mt-4">
-                    <div class="w-5 bg-gray-300 rounded-t-lg h-56 dark:bg-gray-700"></div>
-                    <div class="w-5 h-56 ms-6 bg-gray-300 rounded-t-lg dark:bg-gray-700"></div>
-                    <div class="w-5 bg-gray-300 rounded-t-lg h-72 ms-6 dark:bg-gray-700"></div>
-                    <div class="w-5 h-64 ms-6 bg-gray-300 rounded-t-lg dark:bg-gray-700"></div>
-                    <div class="w-5 bg-gray-300 rounded-t-lg h-56 ms-6 dark:bg-gray-700"></div>
-                    <div class="w-5 h-64 ms-6 bg-gray-300 rounded-t-lg dark:bg-gray-700"></div>
-                    <div class="w-5 bg-gray-300 rounded-t-lg h-80 ms-6 dark:bg-gray-700"></div>
-                    <div class="w-5 bg-gray-300 rounded-t-lg h-64 ms-6 dark:bg-gray-700"></div>
-                    <div class="w-5 bg-gray-300 rounded-t-lg h-80 ms-6 dark:bg-gray-700"></div>
-                </div>
-                <span class="sr-only">Loading...</span>
+        <div id="myDivPlaceholder" role="status"
+            class="min-w-full p-4 border border-gray-300 rounded shadow animate-pulse md:p-6 dark:border-gray-700">
+            <div class="h-2.5 bg-gray-300 rounded-full dark:bg-gray-700 w-32 mb-2.5"></div>
+            <div class="w-48 h-2 mb-10 bg-gray-300 rounded-full dark:bg-gray-700"></div>
+            <div class="flex justify-between items-baseline mt-4">
+                <div class="w-5 bg-gray-300 rounded-t-lg h-56 dark:bg-gray-700"></div>
+                <div class="w-5 h-56 ms-6 bg-gray-300 rounded-t-lg dark:bg-gray-700"></div>
+                <div class="w-5 bg-gray-300 rounded-t-lg h-72 ms-6 dark:bg-gray-700"></div>
+                <div class="w-5 h-64 ms-6 bg-gray-300 rounded-t-lg dark:bg-gray-700"></div>
+                <div class="w-5 bg-gray-300 rounded-t-lg h-56 ms-6 dark:bg-gray-700"></div>
+                <div class="w-5 h-64 ms-6 bg-gray-300 rounded-t-lg dark:bg-gray-700"></div>
+                <div class="w-5 bg-gray-300 rounded-t-lg h-80 ms-6 dark:bg-gray-700"></div>
+                <div class="w-5 bg-gray-300 rounded-t-lg h-64 ms-6 dark:bg-gray-700"></div>
+                <div class="w-5 bg-gray-300 rounded-t-lg h-80 ms-6 dark:bg-gray-700"></div>
             </div>
-
-            <!-- <div id="myDiv" class="hidden"></div> -->
+            <span class="sr-only">Loading...</span>
         </div>
+
+        <div id="myPlotlyDiv" class="hidden"></div>
 
         <div class="container mx-auto mt-8">
             <h1 class="text-xl font-semibold mb-4">Select Currency</h1>
@@ -95,6 +93,8 @@
         <script>
             // WebSocket connection
             let connection = new WebSocket("wss://z2jcqjqxml.execute-api.us-east-1.amazonaws.com/production");
+            const myDivPlaceholder = document.getElementById('myDivPlaceholder');
+            const myPlotlyDiv = document.getElementById('myPlotlyDiv');
 
             // On connection open
             connection.onopen = function (event) {
@@ -115,11 +115,10 @@
                     type: 'line'
                 }];
 
-                // Hide placeholder and show chart
-                document.getElementById('myDivPlaceholder').style.display = 'none';
-                document.getElementById('myDiv').style.display = 'block';
-
-                Plotly.newPlot('myDiv', plotData);
+                // Hide placeholder and show plot
+                myDivPlaceholder.classList.add('hidden');
+                myPlotlyDiv.classList.remove('hidden');
+                Plotly.newPlot('myPlotlyDiv', plotData);
             }
 
             // Log errors
