@@ -2,26 +2,25 @@
 <html lang="en">
 
 <head>
-    <title>Qatari Riyals | Exchange Rates</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="./logo.png" type="image/png">
-    <link rel="stylesheet" href="./style.css">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' };
+    </script>
     <script src="https://cdn.plot.ly/plotly-2.29.1.min.js" charset="utf-8"></script>
+    <title>Qatari Riyals | Exchange Rates</title>
 </head>
 
-<body>
+<body class="dark:bg-black transition-colors">
     <header class="py-4">
         <div class="container mx-auto flex justify-between items-center px-4">
             <img src="./logo.png" alt="Logo" class="h-8">
-            <label for="toggle" class="flex items-center cursor-pointer" onclick="toggleTheme()">
-                <input type="checkbox" id="toggle" class="sr-only peer">
-                <div
-                    class="block relative bg-blue-900 w-16 h-9 p-1 rounded-full before:absolute before:bg-blue-600 before:w-7 before:h-7 before:p-1 before:rounded-full before:transition-all before:duration-500 before:left-1 peer-checked:before:left-8 peer-checked:before:bg-white">
-                </div>
-            </label>
+            <div class="bg-gray-500 w-12 cursor-pointer rounded-3xl toggler dark:bg-green-500">
+                <div class="bg-white w-6 h-6 scale-75 rounded-3xl transition-transform dark:bg-black"></div>
+            </div>
         </div>
     </header>
 
@@ -72,82 +71,37 @@
             </div>
         </div>
     </div>
-
-    <script>
-        // WebSocket connection
-        let connection = new WebSocket(
-            'wss://z2jcqjqxml.execute-api.us-east-1.amazonaws.com/production'
-        )
-        const myDivPlaceholder = document.getElementById('myDivPlaceholder')
-        const myPlotlyDiv = document.getElementById('myPlotlyDiv')
-
-        // On connection open
-        connection.onopen = function (event) {
-            console.log('Connected: ' + JSON.stringify(event))
-            // Automatically select USD currency on page load
-            sendMessage('USD')
-        }
-
-        // Handle received messages
-        connection.onmessage = function (msg) {
-            let data = JSON.parse(msg.data)
-            console.log(data)
-
-            // Plot data
-            let plotData = [{ x: data.x, y: data.y, type: 'line' }]
-
-            // Hide placeholder and show plot
-            myDivPlaceholder.classList.add('hidden')
-            myPlotlyDiv.classList.remove('hidden')
-            Plotly.newPlot('myPlotlyDiv', plotData)
-        }
-
-        // Log errors
-        connection.onerror = function (error) {
-            console.log('WebSocket Error: ' + JSON.stringify(error))
-        }
-
-        // Send message to server with selected currency
-        function sendMessage(currency) {
-            let msgObject = {
-                action: 'sendMessage',
-                data: {
-                    currency: currency
-                }
-            }
-
-            // Send message
-            connection.send(JSON.stringify(msgObject))
-
-            // Log
-            console.log('Message sent: ' + JSON.stringify(msgObject))
-        }
-
-        // Handle WebSocket connection closure
-        connection.onclose = function (event) {
-            console.log('Connection closed: ' + JSON.stringify(event))
-        }
-
-        // Check user preference for dark or light mode from local storage and set theme accordingly
-        const currentTheme = localStorage.getItem('theme') ? localStorage.getItem('theme') : null
-        if (currentTheme) {
-            document.querySelector('html').setAttribute('data-theme', currentTheme)
-        }
-
-        // Toggle dark and light mode and save user preference in local storage for future visits
-        function toggleTheme() {
-            const html = document.querySelector('html')
-            const currentTheme = html.getAttribute('data-theme')
-
-            if (currentTheme === 'dark') {
-                html.setAttribute('data-theme', 'light')
-                localStorage.setItem('theme', 'light')
-            } else {
-                html.setAttribute('data-theme', 'dark')
-                localStorage.setItem('theme', 'dark')
-            }
-        }
-    </script>
 </body>
+<script>
+    // Toggle Dark Functionality
+    let flag = true;
+    const toggler = document.querySelector('.toggler');
+
+    const currentTheme = localStorage.getItem('theme') ? localStorage.getItem('theme') : null
+    if (currentTheme) {
+        document.querySelector('html').classList.add(currentTheme)
+        if (currentTheme === 'dark') {
+            flag = false;
+            toggler.children[0].classList.add('translate-x-6');
+        }
+    }
+
+    // Toggle Dark Function
+    const toggleDark = () => {
+        toggler.addEventListener('click', () => {
+            const html = document.documentElement;
+            toggler.children[0].classList.toggle('translate-x-6');
+            if (flag) {
+                html.classList.add('dark');
+                localStorage.setItem('theme', 'dark')
+            } else {
+                html.classList.remove('dark');
+                localStorage.setItem('theme', 'light')
+            }
+            flag = !flag;
+        });
+    };
+    toggleDark();
+</script>
 
 </html>
