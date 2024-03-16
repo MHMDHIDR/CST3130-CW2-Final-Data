@@ -32,8 +32,11 @@ export async function uploadData(
         summary: Item.summary
       }
     }
-    console.log(`Uploaded ${JSON.stringify(items)} to table ${TableName}`)
+    console.log('\x1b[32m', `Uploaded ${JSON.stringify(items)} to table ${TableName}`)
   } catch (err) {
-    console.error(`ERROR uploading data to table ${TableName}: ${JSON.stringify(err)}`)
+    console.error(
+      '\x1b[31m',
+      `ERROR uploading data to table ${TableName}: ${JSON.stringify(err)}`
+    )
   }
 }

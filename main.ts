@@ -12,7 +12,7 @@ import { getUnixTimestamp } from './utils/getUnixTimestamp'
 import { getExchangeData } from './utils/getExchangeData'
 import { getTextData } from './utils/getTextData'
 
-const currencies: currenciesType[] = ['USD', 'AMD', 'PHP', 'GBP', 'SGD']
+const currencies: currenciesType[] = ['USD', 'GBP', 'AMD', 'PHP', 'SEK']
 
 async function getExchangeRates() {
   try {
@@ -72,7 +72,7 @@ async function getSummaryTextData() {
 }
 
 // A function to getExchangeRates
-// getExchangeRates()
+getExchangeRates()
 
 // A function to get text data
-getSummaryTextData()
+// getSummaryTextData()
