@@ -1,40 +1,92 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <title>Qatari Riyals Exchange Rates</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qatari Riyals | Exchange Rates</title>
     <script src="https://cdn.plot.ly/plotly-2.29.1.min.js" charset="utf-8"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        #myDiv {
+            width: 95%;
+            margin: 0 auto;
+        }
+
+        body {
+            background-color: #f3f4f6;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        header {
+            background-color: #1e3a8a;
+            color: #fff;
+        }
+
+        .currency-button {
+            transition: all 0.3s ease-in-out;
+        }
+
+        .currency-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+    </style>
 </head>
 
 <body>
-    <h1>Qatari Riyals | Exchange Rates</h1>
-    <div id="myDiv"></div>
-    <div id="currencyButtons">
-        <button type="button" onclick="sendMessage('USD')">USD</button>
-        <button type="button" onclick="sendMessage('GBP')">GBP</button>
-        <button type="button" onclick="sendMessage('AMD')">AMD</button>
-        <button type="button" onclick="sendMessage('PHP')">PHP</button>
-        <button type="button" onclick="sendMessage('SEK')">SEK</button>
+    <header class="py-4">
+        <div class="container mx-auto flex justify-between items-center px-4">
+            <img src="./logo.png" alt="Logo" class="h-8">
+            <h1 class="text-2xl font-semibold">Qatari Riyals | Exchange Rates</h1>
+        </div>
+    </header>
+
+    <div class="container mx-auto mt-8 flex justify-center">
+        <div id="myDiv"></div>
     </div>
 
-    <h1>Messages from Server</h1>
-    <p style="border-style: solid; width: 500px; border-width: 1px;" id="messages"></p>
+    <div class="container mx-auto mt-8">
+        <h1 class="text-xl font-semibold mb-4">Select Currency</h1>
+        <div class="grid grid-cols-5 gap-4">
+            <button type="button" onclick="sendMessage('USD')"
+                class="currency-button bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded">
+                USD ($)
+            </button>
+            <button type="button" onclick="sendMessage('GBP')"
+                class="currency-button bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded">
+                GBP (£)
+            </button>
+            <button type="button" onclick="sendMessage('AMD')"
+                class="currency-button bg-purple-500 hover:bg-purple-600 text-white font-semibold py-2 px-4 rounded">
+                AMD (֏)
+            </button>
+            <button type="button" onclick="sendMessage('PHP')"
+                class="currency-button bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded">
+                PHP (₱)
+            </button>
+            <button type="button" onclick="sendMessage('SEK')"
+                class="currency-button bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded">
+                SEK (kr)
+            </button>
+        </div>
+    </div>
 
     <script>
-        // Open connection
+        // WebSocket connection
         let connection = new WebSocket("wss://z2jcqjqxml.execute-api.us-east-1.amazonaws.com/production");
 
-        // Log connected response
+        // On connection open
         connection.onopen = function (event) {
             console.log("Connected: " + JSON.stringify(event));
         };
 
-        // Output messages from the server
+        // Handle received messages
         connection.onmessage = function (msg) {
             let data = JSON.parse(msg.data);
             console.log(data);
 
-            // Assuming data is an array of x and y coordinates
+            // Plot data
             let plotData = [{
                 x: data.x,
                 y: data.y,
@@ -49,18 +101,19 @@
             console.log("WebSocket Error: " + JSON.stringify(error));
         }
 
-        // Send message to server with specified currency
+        // Send message to server with selected currency
         function sendMessage(currency) {
-            // Create message to be sent to server
             let msgObject = {
-                action: "sendMessage", // Used for routing in API Gateway
-                data: { currency }
+                action: "sendMessage",
+                data: {
+                    currency: currency
+                }
             };
 
             // Send message
             connection.send(JSON.stringify(msgObject));
 
-            // Log result
+            // Log
             console.log("Message sent: " + JSON.stringify(msgObject));
         }
 
