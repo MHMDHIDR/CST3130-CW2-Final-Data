@@ -79,6 +79,8 @@
         // On connection open
         connection.onopen = function (event) {
             console.log("Connected: " + JSON.stringify(event));
+            // Automatically select USD currency on page load
+            sendMessage('USD');
         };
 
         // Handle received messages
