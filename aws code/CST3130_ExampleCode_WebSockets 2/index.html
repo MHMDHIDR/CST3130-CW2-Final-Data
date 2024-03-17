@@ -93,12 +93,20 @@
             toggler.children[0].classList.toggle('translate-x-6');
             if (flag) {
                 html.classList.add('dark');
-                localStorage.setItem('theme', 'dark')
+                localStorage.setItem('theme', 'dark');
             } else {
                 html.classList.remove('dark');
-                localStorage.setItem('theme', 'light')
+                localStorage.setItem('theme', 'light');
             }
             flag = !flag;
+
+            // Update Plotly layout based on theme
+            const currentTheme = flag ? 'light' : 'dark';
+            Plotly.relayout('myPlotlyDiv', {
+                'paper_bgcolor': currentTheme === 'dark' ? 'rgba(0, 0, 0, 0)' : 'rgba(255,255,255,0)',
+                'plot_bgcolor': currentTheme === 'dark' ? 'rgba(0, 0, 0, 0)' : 'rgba(255,255,255,0)',
+                'font.color': currentTheme === 'dark' ? 'white' : 'black'
+            });
         });
     };
     toggleDark();
