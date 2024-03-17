@@ -45,27 +45,27 @@
 
         <div id="myPlotlyDiv" class="hidden"></div>
 
-        <div class="container mx-auto mt-8">
+        <div class="container mx-auto mt-8 select-none">
             <h1 class="text-xl font-semibold mb-4">Select Currency</h1>
             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
                 <button type="button" onclick="sendMessage('USD')"
-                    class="currency-button bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded">
+                    class="transition-transform hover:-translate-y-1 shadow-md hover:shadow-lg bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded">
                     USD ($)
                 </button>
                 <button type="button" onclick="sendMessage('GBP')"
-                    class="currency-button bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded">
+                    class="transition-transform hover:-translate-y-1 shadow-md hover:shadow-lg bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded">
                     GBP (£)
                 </button>
                 <button type="button" onclick="sendMessage('AMD')"
-                    class="currency-button bg-purple-500 hover:bg-purple-600 text-white font-semibold py-2 px-4 rounded">
+                    class="transition-transform hover:-translate-y-1 shadow-md hover:shadow-lg bg-purple-500 hover:bg-purple-600 text-white font-semibold py-2 px-4 rounded">
                     AMD (֏)
                 </button>
                 <button type="button" onclick="sendMessage('PHP')"
-                    class="currency-button bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded">
+                    class="transition-transform hover:-translate-y-1 shadow-md hover:shadow-lg bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded">
                     PHP (₱)
                 </button>
                 <button type="button" onclick="sendMessage('SEK')"
-                    class="currency-button bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded">
+                    class="transition-transform hover:-translate-y-1 shadow-md hover:shadow-lg bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded">
                     SEK (kr)
                 </button>
             </div>
@@ -73,44 +73,6 @@
     </div>
 </body>
 <script>
-    // Toggle Dark Functionality
-    let flag = true;
-    const toggler = document.querySelector('.toggler');
-
-    const currentTheme = localStorage.getItem('theme') ? localStorage.getItem('theme') : null
-    if (currentTheme) {
-        document.querySelector('html').classList.add(currentTheme)
-        if (currentTheme === 'dark') {
-            flag = false;
-            toggler.children[0].classList.add('translate-x-6');
-        }
-    }
-
-    // Toggle Dark Function
-    const toggleDark = () => {
-        toggler.addEventListener('click', () => {
-            const html = document.documentElement;
-            toggler.children[0].classList.toggle('translate-x-6');
-            if (flag) {
-                html.classList.add('dark');
-                localStorage.setItem('theme', 'dark');
-            } else {
-                html.classList.remove('dark');
-                localStorage.setItem('theme', 'light');
-            }
-            flag = !flag;
-
-            // Update Plotly layout based on theme
-            const currentTheme = flag ? 'light' : 'dark';
-            Plotly.relayout('myPlotlyDiv', {
-                'paper_bgcolor': currentTheme === 'dark' ? 'rgba(0, 0, 0, 0)' : 'rgba(255,255,255,0)',
-                'plot_bgcolor': currentTheme === 'dark' ? 'rgba(0, 0, 0, 0)' : 'rgba(255,255,255,0)',
-                'font.color': currentTheme === 'dark' ? 'white' : 'black'
-            });
-        });
-    };
-    toggleDark();
-
     // WebSocket connection
     let connection = new WebSocket(
         'wss://z2jcqjqxml.execute-api.us-east-1.amazonaws.com/production'
@@ -153,9 +115,7 @@
     function sendMessage(currency) {
         let msgObject = {
             action: 'sendMessage',
-            data: {
-                currency: currency
-            }
+            data: { currency }
         }
 
         // Send message
@@ -170,6 +130,43 @@
         console.log('Connection closed: ' + JSON.stringify(event))
     }
 
+    // Toggle Dark Functionality
+    let flag = true;
+    const toggler = document.querySelector('.toggler');
+
+    const currentTheme = localStorage.getItem('theme') ? localStorage.getItem('theme') : null
+    if (currentTheme) {
+        document.querySelector('html').classList.add(currentTheme)
+        if (currentTheme === 'dark') {
+            flag = false;
+            toggler.children[0].classList.add('translate-x-6');
+        }
+    }
+
+    // Toggle Dark Function
+    const toggleDark = () => {
+        toggler.addEventListener('click', () => {
+            const html = document.documentElement;
+            toggler.children[0].classList.toggle('translate-x-6');
+            if (flag) {
+                html.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                html.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            }
+            flag = !flag;
+
+            // Update Plotly layout based on theme
+            const currentTheme = flag ? 'light' : 'dark';
+            Plotly.relayout('myPlotlyDiv', {
+                'paper_bgcolor': currentTheme === 'dark' ? 'rgba(0, 0, 0, 0)' : 'rgba(255,255,255,0)',
+                'plot_bgcolor': currentTheme === 'dark' ? 'rgba(0, 0, 0, 0)' : 'rgba(255,255,255,0)',
+                'font.color': currentTheme === 'dark' ? 'white' : 'black'
+            });
+        });
+    };
+    toggleDark();
 </script>
 
 </html>
