@@ -1,5 +1,5 @@
 //Import functions for database
-import { getConnectionIds, deleteConnectionId, getData } from './database.mjs'
+import { getConnectionIds, deleteConnectionId } from './database.mjs'
 
 //Import API Gateway
 import {
@@ -19,7 +19,6 @@ export async function sendMessage(domain, stage, connectionId, data) {
       Data: data
     })
 
-    // console.log('currency is => ', currency)
     console.log('Sending message to: ' + connectionId)
     console.log('Data => ', data)
 

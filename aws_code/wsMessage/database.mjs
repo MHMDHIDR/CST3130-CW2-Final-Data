@@ -1,6 +1,11 @@
 //Import library and scan command
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
-import { DynamoDBDocumentClient, ScanCommand, DeleteCommand } from '@aws-sdk/lib-dynamodb'
+import {
+  DynamoDBDocumentClient,
+  QueryCommand,
+  ScanCommand,
+  DeleteCommand
+} from '@aws-sdk/lib-dynamodb'
 
 //Create client
 const client = new DynamoDBClient({})
@@ -31,13 +36,32 @@ function formatDate(date) {
 export async function getData(currency) {
   const numbericalQuery = {
     TableName: 'QRExchangeRates',
-    Limit: 10,
     FilterExpression: 'toCurrency = :curr',
     ExpressionAttributeValues: {
       ':curr': currency
     }
   }
 
+  let data = {
+    numerical: { x: [], y: [] }
+  }
+
+  try {
+    const numbericalQueryCommand = new ScanCommand(numbericalQuery)
+    let numbericalResults = await docClient.send(numbericalQueryCommand)
+
+    for (const item of numbericalResults.Items) {
+      data.numerical.x.push(formatDate(new Date(item.exTimestamp)))
+      data.numerical.y.push(item.price)
+    }
+  } catch (error) {
+    console.log('error: ' + JSON.stringify(error))
+  }
+
+  return data
+}
+
+export async function getSentimentData(currency) {
   const sentimentQuery = {
     TableName: 'QRExchangeSentimentData',
     KeyConditionExpression: 'Currency = :curr',
@@ -47,25 +71,18 @@ export async function getData(currency) {
   }
 
   let data = {
-    numerical: { x: [], y: [] },
     sentiment: { x: [], y: [] }
   }
 
   try {
-    const numbericalQueryCommand = new ScanCommand(numbericalQuery)
-    const sentimentQueryCommand = new ScanCommand(sentimentQuery)
-    let numbericalResults = await docClient.send(numbericalQueryCommand)
+    const sentimentQueryCommand = new QueryCommand(sentimentQuery)
     let sentimentResults = await docClient.send(sentimentQueryCommand)
 
-    console.log(`Number of items: ${numbericalResults.Count}.`)
-
-    for (const item of numbericalResults.Items) {
-      data.numerical.x.push(formatDate(new Date(item.exTimestamp)))
-      data.numerical.y.push(item.price)
-    }
+    console.log(`Number of sentimentResults: ${sentimentResults.Count}.`)
 
     for (const item of sentimentResults.Items) {
-      data.sentiment.x.push(formatDate(new Date(item.exTimestamp)))
+      console.log('item ->', item)
+      data.sentiment.x.push(formatDate(new Date(item.TimePublished)))
       data.sentiment.y.push(item.sentiment)
     }
   } catch (error) {
