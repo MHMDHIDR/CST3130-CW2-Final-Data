@@ -70,6 +70,10 @@
                 </button>
             </div>
         </div>
+
+        <br /><br />
+
+        <div id="mySentimentPlotlyDiv" class="hidden"></div>
     </div>
 </body>
 <script>
@@ -86,6 +90,7 @@
     )
     const myDivPlaceholder = document.getElementById('myDivPlaceholder')
     const myPlotlyDiv = document.getElementById('myPlotlyDiv')
+    const mySentimentPlotlyDiv = document.getElementById('mySentimentPlotlyDiv')
 
     // On connection open
     connection.onopen = function (event) {
@@ -96,19 +101,31 @@
 
     // Handle received messages
     connection.onmessage = function (msg) {
-        let data = JSON.parse(msg.data)
+        let numericalData = JSON.parse(msg.data).numerical
+        let sentimentData = JSON.parse(msg.data).sentiment
+
+        console.log('sentimentData -> ', sentimentData);
+
         // Plot data
-        let plotData = [{ x: data.x, y: data.y, type: 'line' }]
+        let plotNumericalData = [{ x: numericalData.x, y: numericalData.y, type: 'line' }]
+        // let plotSentimentData = [{ x: sentimentData.x, y: sentimentData.y, type: 'pie' }]
 
         // Hide placeholder and show plot
         myDivPlaceholder.classList.add('hidden')
         myPlotlyDiv.classList.remove('hidden')
-        Plotly.newPlot('myPlotlyDiv', plotData, {
+        // mySentimentPlotlyDiv.classList.remove('hidden')
+        Plotly.newPlot('myPlotlyDiv', plotNumericalData, {
             title: `Qatari Riyals to ${currentCurrency} Exchange Rate`,
             paper_bgcolor: currentTheme === 'dark' ? 'rgba(0, 0, 0, 0)' : 'rgba(255,255,255,0)',
             plot_bgcolor: currentTheme === 'dark' ? 'rgba(0, 0, 0, 0)' : 'rgba(255,255,255,0)',
             font: currentTheme === 'dark' ? { color: 'white' } : { color: 'black' },
         })
+        // Plotly.newPlot('mySentimentPlotlyDiv', plotSentimentData, {
+        //     title: `Qatari Riyals to ${currentCurrency} Sentiment Analysis`,
+        //     paper_bgcolor: currentTheme === 'dark' ? 'rgba(0, 0, 0, 0)' : 'rgba(255,255,255,0)',
+        //     plot_bgcolor: currentTheme === 'dark' ? 'rgba(0, 0, 0, 0)' : 'rgba(255,255,255,0)',
+        //     font: currentTheme === 'dark' ? { color: 'white' } : { color: 'black' },
+        // })
     }
 
     // Log errors
