@@ -1,11 +1,6 @@
 //Import library and scan command
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
-import {
-  DynamoDBDocumentClient,
-  ScanCommand,
-  DeleteCommand,
-  QueryCommand
-} from '@aws-sdk/lib-dynamodb'
+import { DynamoDBDocumentClient, ScanCommand, DeleteCommand } from '@aws-sdk/lib-dynamodb'
 
 //Create client
 const client = new DynamoDBClient({})
@@ -34,33 +29,50 @@ function formatDate(date) {
 
 // Build a structure
 export async function getData(currency) {
-  const query = {
+  const numbericalQuery = {
     TableName: 'QRExchangeRates',
-    Limit: 5,
-    ScanIndexForward: false,
-    KeyConditionExpression: 'toCurrency = :curr',
+    Limit: 10,
+    FilterExpression: 'toCurrency = :curr',
     ExpressionAttributeValues: {
       ':curr': currency
     }
   }
 
-  let data = { x: [], y: [] }
+  const sentimentQuery = {
+    TableName: 'QRExchangeSentimentData',
+    KeyConditionExpression: 'Currency = :curr',
+    ExpressionAttributeValues: {
+      ':curr': currency
+    }
+  }
+
+  let data = {
+    numerical: { x: [], y: [] },
+    sentiment: { x: [], y: [] }
+  }
 
   try {
-    const queryCommand = new QueryCommand(query)
-    let results = await docClient.send(queryCommand)
+    const numbericalQueryCommand = new ScanCommand(numbericalQuery)
+    const sentimentQueryCommand = new ScanCommand(sentimentQuery)
+    let numbericalResults = await docClient.send(numbericalQueryCommand)
+    let sentimentResults = await docClient.send(sentimentQueryCommand)
 
-    console.log(`Number of items: ${results.Count}.`)
+    console.log(`Number of items: ${numbericalResults.Count}.`)
 
-    for (const item of results.Items) {
-      data.x.push(formatDate(new Date(item.exTimestamp)))
-      data.y.push(item.price)
+    for (const item of numbericalResults.Items) {
+      data.numerical.x.push(formatDate(new Date(item.exTimestamp)))
+      data.numerical.y.push(item.price)
+    }
+
+    for (const item of sentimentResults.Items) {
+      data.sentiment.x.push(formatDate(new Date(item.exTimestamp)))
+      data.sentiment.y.push(item.sentiment)
     }
   } catch (error) {
     console.log('error: ' + JSON.stringify(error))
   }
 
-  return JSON.stringify(data)
+  return data
 }
 
 //Deletes the specified connection ID

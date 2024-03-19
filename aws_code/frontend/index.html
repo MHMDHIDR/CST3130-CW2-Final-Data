@@ -48,23 +48,23 @@
         <div class="container mx-auto mt-8 select-none">
             <h1 class="text-xl font-semibold mb-4">Select Currency</h1>
             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-                <button type="button" onclick="sendMessage('USD')"
+                <button type="button" onclick="selectedCurrency('USD')"
                     class="transition-transform hover:-translate-y-1 shadow-md hover:shadow-lg bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded">
                     USD ($)
                 </button>
-                <button type="button" onclick="sendMessage('GBP')"
+                <button type="button" onclick="selectedCurrency('GBP')"
                     class="transition-transform hover:-translate-y-1 shadow-md hover:shadow-lg bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded">
                     GBP (£)
                 </button>
-                <button type="button" onclick="sendMessage('AMD')"
+                <button type="button" onclick="selectedCurrency('AMD')"
                     class="transition-transform hover:-translate-y-1 shadow-md hover:shadow-lg bg-purple-500 hover:bg-purple-600 text-white font-semibold py-2 px-4 rounded">
                     AMD (֏)
                 </button>
-                <button type="button" onclick="sendMessage('PHP')"
+                <button type="button" onclick="selectedCurrency('PHP')"
                     class="transition-transform hover:-translate-y-1 shadow-md hover:shadow-lg bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded">
                     PHP (₱)
                 </button>
-                <button type="button" onclick="sendMessage('SEK')"
+                <button type="button" onclick="selectedCurrency('SEK')"
                     class="transition-transform hover:-translate-y-1 shadow-md hover:shadow-lg bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded">
                     SEK (kr)
                 </button>
@@ -73,6 +73,13 @@
     </div>
 </body>
 <script>
+    let currentCurrency = 'USD';
+    let selectedCurrency = (selectedValue) => {
+        currentCurrency = selectedValue;
+        // Call sendMessage function with the selected currency
+        sendMessage(selectedValue);
+    };
+
     // WebSocket connection
     let connection = new WebSocket(
         'wss://z2jcqjqxml.execute-api.us-east-1.amazonaws.com/production'
@@ -90,8 +97,6 @@
     // Handle received messages
     connection.onmessage = function (msg) {
         let data = JSON.parse(msg.data)
-        console.log(data)
-
         // Plot data
         let plotData = [{ x: data.x, y: data.y, type: 'line' }]
 
@@ -99,7 +104,7 @@
         myDivPlaceholder.classList.add('hidden')
         myPlotlyDiv.classList.remove('hidden')
         Plotly.newPlot('myPlotlyDiv', plotData, {
-            title: 'Qatari Riyals Exchange Rate',
+            title: `Qatari Riyals to ${currentCurrency} Exchange Rate`,
             paper_bgcolor: currentTheme === 'dark' ? 'rgba(0, 0, 0, 0)' : 'rgba(255,255,255,0)',
             plot_bgcolor: currentTheme === 'dark' ? 'rgba(0, 0, 0, 0)' : 'rgba(255,255,255,0)',
             font: currentTheme === 'dark' ? { color: 'white' } : { color: 'black' },
