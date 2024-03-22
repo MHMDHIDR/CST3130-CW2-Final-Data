@@ -78,11 +78,11 @@
 </body>
 <script>
     let currentCurrency = 'USD';
-    // let selectedCurrency = (selectedValue) => {
-    //     currentCurrency = selectedValue;
-    //     // Call sendMessage function with the selected currency
-    //     sendMessage(selectedValue);
-    // };
+    let selectedCurrency = (selectedValue) => {
+        currentCurrency = selectedValue;
+        // Call sendMessage function with the selected currency
+        sendMessage(selectedValue);
+    };
 
     // WebSocket connection
     let connection = new WebSocket(
