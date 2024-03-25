@@ -18,9 +18,14 @@ export const handler = async event => {
     const connectionId = event.requestContext.connectionId
 
     //Get promises to send messages to connected clients
-    await sendMessage(domain, stage, connectionId, JSON.stringify(data))
+    await sendMessage(
+      domain,
+      stage,
+      connectionId,
+      JSON.stringify({ numericalData: data, sentimentData: sentimentData })
+    )
 
-    await sendMessage(domain, stage, connectionId, JSON.stringify(sentimentData))
+    // await sendMessage(domain, stage, connectionId, JSON.stringify(sentimentData));
   } catch (err) {
     return { statusCode: 500, body: 'Error: ' + JSON.stringify(err) }
   }
