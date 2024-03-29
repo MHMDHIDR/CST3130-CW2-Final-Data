@@ -5,7 +5,7 @@ export type TimeSeriesEntryType = {
 }
 
 export type MetaDataType = {
-  'Meta Data': any
+  'Meta Data': string
   'Time Series FX (Daily)': { [date: string]: TimeSeriesEntryType }
 }
 
