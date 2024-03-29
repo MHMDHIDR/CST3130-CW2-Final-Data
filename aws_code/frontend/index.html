@@ -94,31 +94,18 @@
 
     // On connection open
     connection.onopen = function (event) {
-        console.log('Connected: ' + JSON.stringify(event))
         // Automatically select USD currency on page load
         sendMessage('USD')
     }
 
     // Handle received messages
     connection.onmessage = function (msg) {
-        console.log("meessage received -> ", msg.data);
         let numericalData = JSON.parse(msg.data).numericalData.numerical
         let sentimentData = JSON.parse(msg.data).sentimentData.sentiment
 
-        console.log('numericalData -> ', numericalData);
-
-        console.log('sentimentData -> ', JSON.stringify(sentimentData));
-
         // Plot data
         let plotNumericalData = [{ x: numericalData?.x, y: numericalData?.y, type: 'line' }];
-        let plotSentimentData = [];
-
-        if (sentimentData && sentimentData.x && sentimentData.y) {
-            plotSentimentData = [{ x: sentimentData.x, y: sentimentData.y, type: 'line' }];
-
-            console.log('plotSentimentData -> ', plotSentimentData);
-        }
-
+        let plotSentimentData = [{ x: sentimentData.x, y: sentimentData.y, type: 'line' }];
 
         // Hide placeholder and show plot
         myDivPlaceholder.classList.add('hidden')
@@ -153,9 +140,6 @@
 
         // Send message
         connection.send(JSON.stringify(msgObject))
-
-        // Log
-        console.log('Message sent: ' + JSON.stringify(msgObject))
     }
 
     // Handle WebSocket connection closure
