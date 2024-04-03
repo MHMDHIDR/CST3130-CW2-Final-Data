@@ -1,6 +1,7 @@
 //Axios will handle HTTP requests to web service
 import axios from 'axios'
 import Plotly from 'plotly'
+import fs from 'fs'
 
 //The ID of the student whose data you want to plot
 let studentID = 'M00970572'
@@ -52,13 +53,55 @@ async function plotData(studentID, xValues, yValues) {
     y: yValues,
     type: 'scatter',
     mode: 'line',
-    name: studentID,
+    name: 'Original',
     marker: {
       color: 'rgb(219, 64, 82)',
       size: 12
     }
   }
-  let data = [studentData]
+  // get the data from the file
+  let predictedData = JSON.parse(fs.readFileSync('synthetic_predictions.json'))
+    .predictions[0]
+  let meanData = {
+    x: [],
+    y: predictedData.mean,
+    type: 'scatter',
+    mode: 'line',
+    name: 'Mean',
+    marker: {
+      color: 'green',
+      size: 12
+    }
+  }
+  let quantiles01Data = {
+    x: [],
+    y: predictedData.quantiles['0.1'],
+    type: 'scatter',
+    mode: 'line',
+    name: 'Quantiles 0.1',
+    marker: {
+      color: 'orange',
+      size: 12
+    }
+  }
+  let quantiles09Data = {
+    x: [],
+    y: predictedData.quantiles['0.9'],
+    type: 'scatter',
+    mode: 'line',
+    name: 'Quantiles 0.9',
+    marker: {
+      color: 'blue',
+      size: 12
+    }
+  }
+
+  for (let i = xValues.length; i <= xValues.length + predictedData.mean.length; ++i) {
+    meanData.x.push(i)
+    quantiles01Data.x.push(i)
+    quantiles09Data.x.push(i)
+  }
+  let data = [studentData, meanData, quantiles01Data, quantiles09Data]
 
   //Layout of graph
   let layout = {

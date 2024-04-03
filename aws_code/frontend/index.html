@@ -105,7 +105,12 @@
 
         // Plot data
         let plotNumericalData = [{ x: numericalData?.x, y: numericalData?.y, type: 'line' }];
-        let plotSentimentData = [{ x: sentimentData.x, y: sentimentData.y, type: 'line' }];
+        let plotSentimentData = [{
+            values: sentimentData.y,
+            labels: sentimentData.x,
+            type: 'pie',
+            hole: 0.9 
+        }];
 
         // Hide placeholder and show plot
         myDivPlaceholder.classList.add('hidden')
