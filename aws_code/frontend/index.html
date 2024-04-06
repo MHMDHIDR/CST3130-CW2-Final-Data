@@ -105,6 +105,8 @@
         let numericalData = JSON.parse(msg.data).numericalData.numerical
         let sentimentData = JSON.parse(msg.data).sentimentData.sentiment
 
+        console.log(JSON.stringify(numericalData));
+
         // Plot data
         let plotNumericalData = [{ x: numericalData?.x, y: numericalData?.y, type: 'line' }];
         let plotSentimentData = [{
