@@ -13,8 +13,7 @@ const endpointData = {
   ],
   configuration: {
     num_samples: 50,
-    output_types: ['mean', 'quantiles', 'samples'],
-    quantiles: ['0.1', '0.9']
+    output_types: ['mean']
   }
 }
 
@@ -33,6 +32,7 @@ async function invokeEndpoint() {
   let predictions = JSON.parse(Buffer.from(response.Body).toString('utf8'))
   console.log(predictions)
   console.log(JSON.stringify(predictions))
+
 }
 
 invokeEndpoint()
