@@ -18,12 +18,11 @@
 </head>
 
 <style>
-.bungee-spice-regular {
-  font-family: "Bungee Spice", sans-serif;
-  font-weight: 400;
-  font-style: normal;
-}
-
+    .bungee-spice-regular {
+        font-family: "Bungee Spice", sans-serif;
+        font-weight: 400;
+        font-style: normal;
+    }
 </style>
 
 <body class="dark:bg-black transition-colors">
@@ -115,25 +114,46 @@
     }
 
     // Handle received messages
-    connection.onmessage = function (msg) {
-        let numericalData = JSON.parse(msg.data).numericalData.numerical
-        let sentimentData = JSON.parse(msg.data).sentimentData.sentiment.y
+   connection.onmessage = function (msg) {
+        let numericalData = JSON.parse(msg.data).numericalData.numerical;
+        let sentimentData = JSON.parse(msg.data).sentimentData.sentiment.y;
 
-        console.log(JSON.stringify(sentimentData, null, 2));
+        // Count occurrences of Positive, Neutral, and Negative sentiments
+        let positiveCount = 0;
+        let neutralCount = 0;
+        let negativeCount = 0;
+
+        sentimentData.forEach(sentiment => {
+            if (sentiment > 0) {
+                positiveCount++;
+            } else if (sentiment < 0) {
+                negativeCount++;
+            } else {
+                neutralCount++;
+            }
+        });
+
+        // Calculate percentages
+        let total = positiveCount + neutralCount + negativeCount;
+        let positivePercentage = (positiveCount / total) * 100;
+        let neutralPercentage = (neutralCount / total) * 100;
+        let negativePercentage = (negativeCount / total) * 100;
 
         // Plot data
         let plotNumericalData = [{ x: numericalData?.x, y: numericalData?.y, type: 'line' }];
         let plotSentimentData = [{
-            values: sentimentData.y,
-            labels: sentimentData.x,
+            values: [positivePercentage, neutralPercentage, negativePercentage],
+            labels: ['Positive', 'Neutral', 'Negative'],
             type: 'pie',
-            hole: 0.9 
+            hole: 0.9
         }];
 
-        // Hide placeholder and show plot
-        myDivPlaceholder.classList.add('hidden')
-        myPlotlyDiv.classList.remove('hidden')
-        mySentimentPlotlyDiv.classList.remove('hidden')
+        // Hide placeholder and show plots
+        myDivPlaceholder.classList.add('hidden');
+        myPlotlyDiv.classList.remove('hidden');
+        mySentimentPlotlyDiv.classList.remove('hidden');
+
+        // Plot numerical data
         Plotly.newPlot('myPlotlyDiv', plotNumericalData, {
             title: `${currentCurrency} Exchange Rate`,
             paper_bgcolor: currentTheme === 'dark' ? 'rgba(0, 0, 0, 0)' : 'rgba(255,255,255,0)',
@@ -141,6 +161,7 @@
             font: currentTheme === 'dark' ? { color: 'white' } : { color: 'black' },
         });
 
+        // Plot sentiment analysis data
         Plotly.newPlot('mySentimentPlotlyDiv', plotSentimentData, {
             title: `${currentCurrency} Sentiment Analysis`,
             paper_bgcolor: currentTheme === 'dark' ? 'rgba(0, 0, 0, 0)' : 'rgba(255,255,255,0)',
@@ -148,6 +169,7 @@
             font: currentTheme === 'dark' ? { color: 'white' } : { color: 'black' },
         });
     }
+
 
     // Log errors
     connection.onerror = function (error) {
