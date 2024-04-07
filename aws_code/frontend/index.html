@@ -161,13 +161,30 @@
             font: currentTheme === 'dark' ? { color: 'white' } : { color: 'black' },
         });
 
-        // Plot sentiment analysis data
-        Plotly.newPlot('mySentimentPlotlyDiv', plotSentimentData, {
-            title: `${currentCurrency} Sentiment Analysis`,
-            paper_bgcolor: currentTheme === 'dark' ? 'rgba(0, 0, 0, 0)' : 'rgba(255,255,255,0)',
-            plot_bgcolor: currentTheme === 'dark' ? 'rgba(0, 0, 0, 0)' : 'rgba(255,255,255,0)',
-            font: currentTheme === 'dark' ? { color: 'white' } : { color: 'black' },
-        });
+        // Plotting sentiment analysis data
+       Plotly.newPlot('mySentimentPlotlyDiv', plotSentimentData, {
+           title: '', 
+           annotations: [
+               {
+                   font: {
+                       size: 20
+                   },
+                   showarrow: false,
+                   text: `${currentCurrency} Sentiment Analysis`, 
+                   x: 0.5, 
+                   y: 0.5, 
+                   textposition: 'middle center', 
+               }
+           ],
+           paper_bgcolor: currentTheme === 'dark' ? 'rgba(0, 0, 0, 0)' : 'rgba(255,255,255,0)',
+           plot_bgcolor: currentTheme === 'dark' ? 'rgba(0, 0, 0, 0)' : 'rgba(255,255,255,0)',
+           font: currentTheme === 'dark' ? { color: 'white' } : { color: 'black' },
+           height: 600,
+           width: 600,
+           showlegend: false,
+           grid: { rows: 1, columns: 1 } // Adjust grid configuration if needed
+       });
+
     }
 
 
