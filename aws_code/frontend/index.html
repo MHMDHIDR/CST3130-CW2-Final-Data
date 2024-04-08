@@ -131,13 +131,14 @@
 
     // Handle received messages
     connection.onmessage = function (msg) {
+        // Parse the received data
         let numericalData = JSON.parse(msg.data).numericalData.numerical;
         let sentimentData = JSON.parse(msg.data).sentimentData.sentiment.y;
         let numericalPredictions = JSON.parse(msg.data).numericalData.predictions.y;
 
-        console.log('numericalPredictions', numericalPredictions);
+        console.log('numericalData ->', numericalData);
 
-        // Count occurrences of Positive, Neutral, and Negative sentiments
+        // Calculate occurrences of Positive, Neutral, and Negative sentiments
         let positiveCount = 0;
         let neutralCount = 0;
         let negativeCount = 0;
@@ -168,17 +169,26 @@
             }
         }];
 
+        // Push x values for predicted data based on the length of numerical data x values
         let plotPredictionData = [{
             x: [],
             y: numericalPredictions,
             name: 'Original', type: 'line',
             marker: {
-                color: 'rgb(70, 0, 200)',
+                color: 'rgb(255, 255, 0)',
                 size: 12
             }
         }];
 
+        // Populate x values for predicted data
+        for (let i = numericalData.x.length; i < numericalData.x.length + numericalPredictions.length; i++) {
+            // Push indexes starting from the length of numerical data x values
+            plotPredictionData[0].x.push(i);
+        }
 
+        console.log('plotPredictionData ->', plotPredictionData);
+
+        // Plotting sentiment analysis data
         let plotSentimentData = [{
             values: [positivePercentage, neutralPercentage, negativePercentage],
             labels: ['Positive', 'Neutral', 'Negative'],
@@ -220,7 +230,7 @@
             height: 600,
             width: 600,
             showlegend: false,
-            grid: { rows: 1, columns: 1 } // Adjust grid configuration if needed
+            grid: { rows: 1, columns: 1 }
         });
 
     }
