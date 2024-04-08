@@ -10,25 +10,18 @@ import { DynamoDBDocumentClient, PutCommand } from '@aws-sdk/lib-dynamodb'
 const client = new DynamoDBClient({})
 const documentClient = DynamoDBDocumentClient.from(client)
 
-// Step 1: get the last timestamp from numerical_data then add one day to each timestamp
+// Step 1: get the first timestamp from numerical_data then add one day to each timestamp
 const dataPath = 'numerical_data_USD.json'
 const rawData = fs.readFileSync(dataPath)
 const data = JSON.parse(rawData)
-const lastTimestamp = data[data.length - 1].exTimestamp
-
-// Step 2: Increment each timestamp by one day
-const oneDay = 24 * 60 * 60 * 1000 // 1 day in milliseconds
-const incrementedData = data.map((item, index) => ({
-  ...item,
-  exTimestamp: lastTimestamp + (index + 1) * oneDay
-}))
+const firstTimestamp = data[0].exTimestamp
 
 // Step 3: Combine incremented timestamps with prediction values
 const endpointData = {
   instances: [
     {
       start: '2014-11-24 00:00:00',
-      target: incrementedData.map(item => item.price)
+      target: []
     }
   ],
   configuration: {
@@ -56,6 +49,16 @@ async function invokeEndpoint() {
     const predictions = JSON.parse(Buffer.from(response.Body).toString('utf8'))
     console.log(predictions)
     console.log('\x1b[35m', JSON.stringify(predictions))
+
+    // Step 2: Increment each timestamp by one day
+    const oneDay = 24 * 60 * 60 * 1000 // 1 day in milliseconds
+    const incrementedData = data.slice(0, 50).map((item, index) => ({
+      ...item,
+      exTimestamp: firstTimestamp + index * oneDay
+    }))
+
+    // Combine incremented timestamps with prediction values
+    endpointData.instances[0].target = incrementedData.map(item => item.price)
 
     // Step 4: Upload the data to DynamoDB
     const TableName = 'Predictions'
