@@ -27,7 +27,7 @@ export async function sendMessage(domain, stage, connectionId, data) {
     });
 
     console.log('Sending message to: ' + connectionId);
-    console.log('Data => ', data);
+    console.log('data  => ', data);
 
     //Wait for API Gateway to execute and log result
     await apiGwClient.send(postToConnectionCommand);
