@@ -136,10 +136,6 @@
         let sentimentData = JSON.parse(msg.data).sentimentData.sentiment.y;
         let numericalPredictions = JSON.parse(msg.data).numericalData.predictions;
 
-        console.log('numericalData ->', numericalData);
-
-        console.log('numericalPredictions ->', numericalPredictions);
-
         // Calculate occurrences of Positive, Neutral, and Negative sentiments
         let positiveCount = 0;
         let neutralCount = 0;
@@ -165,10 +161,7 @@
         let plotNumericalData = {
             x: numericalData?.x, y: numericalData?.y,
             name: 'Original', type: 'line',
-            marker: {
-                color: 'rgb(70, 0, 200)',
-                size: 12
-            }
+            marker: { color: 'rgb(70, 0, 200)', size: 12 }
         };
 
         // Push x values for predicted data based on the length of numerical data x values
@@ -176,11 +169,8 @@
             // Populate x values for predicted data using the numericalPredictions x values ( dates )
             x: numericalPredictions.x,
             y: numericalPredictions.y,
-            name: 'Original', type: 'line',
-            marker: {
-                color: 'rgb(255, 0, 0)',
-                size: 12
-            }
+            name: 'Predictions', type: 'line',
+            marker: { color: 'rgb(255, 0, 0)', size: 12 }
         };
 
 
