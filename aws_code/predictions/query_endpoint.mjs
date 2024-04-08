@@ -11,7 +11,7 @@ const client = new DynamoDBClient({})
 const documentClient = DynamoDBDocumentClient.from(client)
 
 // Step 1: get the first timestamp from numerical_data then add one day to each timestamp
-const dataPath = 'numerical_data_USD.json'
+const dataPath = 'numerical_data_SEK.json'
 const rawData = fs.readFileSync(dataPath)
 const data = JSON.parse(rawData)
 const firstTimestamp = data[0].exTimestamp
@@ -38,7 +38,7 @@ async function invokeEndpoint() {
   try {
     // Create and send command with data to SageMaker endpoint
     const command = new InvokeEndpointCommand({
-      EndpointName: 'USDEndpoint',
+      EndpointName: 'SEKEndpoint',
       Body: JSON.stringify(endpointData),
       ContentType: 'application/json',
       Accept: 'application/json'
@@ -64,7 +64,7 @@ async function invokeEndpoint() {
     const TableName = 'Predictions'
 
     const combinedData = incrementedData.map((item, index) => ({
-      Currency: 'USD',
+      Currency: 'SEK',
       TimePublished: item.exTimestamp,
       price: predictions.predictions[0].mean[index]
     }))

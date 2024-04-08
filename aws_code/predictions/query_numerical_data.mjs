@@ -51,10 +51,10 @@ function writeToJsonFile(data, fileName) {
 
 // Main function to query DynamoDB, format data, and write to JSON file
 async function main() {
-  const currency = 'USD'
+  const currency = 'SEK'
   const data = await queryDynamoDB(currency)
   const formattedData = formatData(data)
-  const fileName = 'numerical_data_USD.json'
+  const fileName = 'numerical_data_SEK.json'
   writeToJsonFile(JSON.stringify(data), fileName)
 }
 
