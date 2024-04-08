@@ -14,7 +14,7 @@ const documentClient = DynamoDBDocumentClient.from(client)
 const dataPath = 'numerical_data_SEK.json'
 const rawData = fs.readFileSync(dataPath)
 const data = JSON.parse(rawData)
-const firstTimestamp = data[0].exTimestamp
+const lastTimestamp = data[data.length - 1].exTimestamp
 
 // Step 3: Combine incremented timestamps with prediction values
 const endpointData = {
@@ -54,7 +54,7 @@ async function invokeEndpoint() {
     const oneDay = 24 * 60 * 60 * 1000 // 1 day in milliseconds
     const incrementedData = data.slice(0, 50).map((item, index) => ({
       ...item,
-      exTimestamp: firstTimestamp + index * oneDay
+      exTimestamp: lastTimestamp + oneDay * (index + 1)
     }))
 
     // Combine incremented timestamps with prediction values
