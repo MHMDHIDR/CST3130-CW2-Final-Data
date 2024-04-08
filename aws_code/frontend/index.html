@@ -134,9 +134,11 @@
         // Parse the received data
         let numericalData = JSON.parse(msg.data).numericalData.numerical;
         let sentimentData = JSON.parse(msg.data).sentimentData.sentiment.y;
-        let numericalPredictions = JSON.parse(msg.data).numericalData.predictions.y;
+        let numericalPredictions = JSON.parse(msg.data).numericalData.predictions;
 
         console.log('numericalData ->', numericalData);
+
+        console.log('numericalPredictions ->', numericalPredictions);
 
         // Calculate occurrences of Positive, Neutral, and Negative sentiments
         let positiveCount = 0;
@@ -160,40 +162,34 @@
         let negativePercentage = (negativeCount / total) * 100;
 
         // Plot data
-        let plotNumericalData = [{
+        let plotNumericalData = {
             x: numericalData?.x, y: numericalData?.y,
             name: 'Original', type: 'line',
             marker: {
                 color: 'rgb(70, 0, 200)',
                 size: 12
             }
-        }];
+        };
 
         // Push x values for predicted data based on the length of numerical data x values
-        let plotPredictionData = [{
-            x: [],
-            y: numericalPredictions,
+        let plotPredictionData = {
+            // Populate x values for predicted data using the numericalPredictions x values ( dates )
+            x: numericalPredictions.x,
+            y: numericalPredictions.y,
             name: 'Original', type: 'line',
             marker: {
-                color: 'rgb(255, 255, 0)',
+                color: 'rgb(255, 0, 0)',
                 size: 12
             }
-        }];
+        };
 
-        // Populate x values for predicted data
-        for (let i = numericalData.x.length; i < numericalData.x.length + numericalPredictions.length; i++) {
-            // Push indexes starting from the length of numerical data x values
-            plotPredictionData[0].x.push(i);
-        }
-
-        console.log('plotPredictionData ->', plotPredictionData);
 
         // Plotting sentiment analysis data
         let plotSentimentData = [{
             values: [positivePercentage, neutralPercentage, negativePercentage],
             labels: ['Positive', 'Neutral', 'Negative'],
             type: 'pie',
-            hole: 0.9
+            hole: 0.7
         }];
 
         // Hide placeholder and show plots
@@ -202,7 +198,7 @@
         mySentimentPlotlyDiv.classList.remove('hidden');
 
         // Plot numerical data
-        Plotly.newPlot('myPlotlyDiv', plotNumericalData, {
+        Plotly.newPlot('myPlotlyDiv', [plotNumericalData, plotPredictionData], {
             title: `${currentCurrency} Exchange Rate`,
             paper_bgcolor: currentTheme === 'dark' ? 'rgba(0, 0, 0, 0)' : 'rgba(255,255,255,0)',
             plot_bgcolor: currentTheme === 'dark' ? 'rgba(0, 0, 0, 0)' : 'rgba(255,255,255,0)',
