@@ -23,6 +23,18 @@
         font-weight: 400;
         font-style: normal;
     }
+    /* Fixed sidebar style */
+    .fixed-sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 250px; /* Adjust the width as needed */
+        background-color: #f3f4f6; /* Sidebar background color */
+        overflow-y: auto; /* Enable vertical scrolling if needed */
+        padding: 20px;
+        padding-top: 50px;
+    }
 </style>
 
 <body class="dark:bg-black transition-colors">
@@ -58,33 +70,33 @@
 
         <div id="myPlotlyDiv" class="hidden"></div>
 
-        <div class="container mx-auto mt-8 select-none fixed">
-            <h1 class="text-xl font-semibold mb-4">Select Currency</h1>
-            <div class="flex flex-col gap-y-3">
-                <button type="button" onclick="selectedCurrency('USD')"
-                    class="max-w-xs transition-transform hover:-translate-y-1 shadow-md hover:shadow-lg bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded">
-                    USD ($)
-                </button>
-                <button type="button" onclick="selectedCurrency('GBP')"
-                    class="max-w-xs transition-transform hover:-translate-y-1 shadow-md hover:shadow-lg bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded">
-                    GBP (£)
-                </button>
-                <button type="button" onclick="selectedCurrency('AMD')"
-                    class="max-w-xs transition-transform hover:-translate-y-1 shadow-md hover:shadow-lg bg-purple-500 hover:bg-purple-600 text-white font-semibold py-2 px-4 rounded">
-                    AMD (֏)
-                </button>
-                <button type="button" onclick="selectedCurrency('PHP')"
-                    class="max-w-xs transition-transform hover:-translate-y-1 shadow-md hover:shadow-lg bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded">
-                    PHP (₱)
-                </button>
-                <button type="button" onclick="selectedCurrency('SEK')"
-                    class="max-w-xs transition-transform hover:-translate-y-1 shadow-md hover:shadow-lg bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded">
-                    SEK (kr)
-                </button>
+        <div class="fixed-sidebar">
+            <div class="container mx-auto mt-8 select-none fixed">
+                <h1 class="text-xl font-semibold mb-4">Select A Currency</h1>
+                <div class="flex flex-col gap-y-3">
+                    <button type="button" onclick="selectedCurrency('USD')"
+                        class="w-32 transition-transform hover:-translate-y-1 shadow-md hover:shadow-lg bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded">
+                        USD ($)
+                    </button>
+                    <button type="button" onclick="selectedCurrency('GBP')"
+                        class="w-32 transition-transform hover:-translate-y-1 shadow-md hover:shadow-lg bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded">
+                        GBP (£)
+                    </button>
+                    <button type="button" onclick="selectedCurrency('AMD')"
+                        class="w-32 transition-transform hover:-translate-y-1 shadow-md hover:shadow-lg bg-purple-500 hover:bg-purple-600 text-white font-semibold py-2 px-4 rounded">
+                        AMD (֏)
+                    </button>
+                    <button type="button" onclick="selectedCurrency('PHP')"
+                        class="w-32 transition-transform hover:-translate-y-1 shadow-md hover:shadow-lg bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded">
+                        PHP (₱)
+                    </button>
+                    <button type="button" onclick="selectedCurrency('SEK')"
+                        class="w-32 transition-transform hover:-translate-y-1 shadow-md hover:shadow-lg bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded">
+                        SEK (kr)
+                    </button>
+                </div>
             </div>
         </div>
-
-        <br /><br />
 
         <div id="mySentimentPlotlyDiv" class="hidden"></div>
 
