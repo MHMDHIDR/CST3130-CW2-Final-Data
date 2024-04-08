@@ -23,15 +23,19 @@
         font-weight: 400;
         font-style: normal;
     }
+
     /* Fixed sidebar style */
     .fixed-sidebar {
         position: fixed;
         top: 0;
         left: 0;
         bottom: 0;
-        width: 250px; /* Adjust the width as needed */
-        background-color: #f3f4f6; /* Sidebar background color */
-        overflow-y: auto; /* Enable vertical scrolling if needed */
+        width: 250px;
+        /* Adjust the width as needed */
+        background-color: #f3f4f6;
+        /* Sidebar background color */
+        overflow-y: auto;
+        /* Enable vertical scrolling if needed */
         padding: 20px;
         padding-top: 50px;
     }
@@ -129,8 +133,9 @@
     connection.onmessage = function (msg) {
         let numericalData = JSON.parse(msg.data).numericalData.numerical;
         let sentimentData = JSON.parse(msg.data).sentimentData.sentiment.y;
+        let numericalPredictions = JSON.parse(msg.data).numericalData.predictions.y;
 
-        console.log('JSON.parse(msg.data)', JSON.parse(msg.data));
+        console.log('numericalPredictions', numericalPredictions);
 
         // Count occurrences of Positive, Neutral, and Negative sentiments
         let positiveCount = 0;
@@ -154,7 +159,26 @@
         let negativePercentage = (negativeCount / total) * 100;
 
         // Plot data
-        let plotNumericalData = [{ x: numericalData?.x, y: numericalData?.y, type: 'line' }];
+        let plotNumericalData = [{
+            x: numericalData?.x, y: numericalData?.y,
+            name: 'Original', type: 'line',
+            marker: {
+                color: 'rgb(70, 0, 200)',
+                size: 12
+            }
+        }];
+
+        let plotPredictionData = [{
+            x: [],
+            y: numericalPredictions,
+            name: 'Original', type: 'line',
+            marker: {
+                color: 'rgb(70, 0, 200)',
+                size: 12
+            }
+        }];
+
+
         let plotSentimentData = [{
             values: [positivePercentage, neutralPercentage, negativePercentage],
             labels: ['Positive', 'Neutral', 'Negative'],
