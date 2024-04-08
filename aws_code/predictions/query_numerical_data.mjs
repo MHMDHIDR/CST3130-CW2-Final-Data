@@ -20,6 +20,8 @@ async function queryDynamoDB(currency) {
   try {
     const queryCommand = new ScanCommand(query)
     const response = await docClient.send(queryCommand)
+    // Only retrieve the last 100 items
+    response.Items = response.Items.slice(-100)
     return response.Items
   } catch (error) {
     console.error('Error querying DynamoDB:', error)
@@ -49,11 +51,11 @@ function writeToJsonFile(data, fileName) {
 
 // Main function to query DynamoDB, format data, and write to JSON file
 async function main() {
-  const currency = 'SEK' // Specify the currency here
+  const currency = 'USD'
   const data = await queryDynamoDB(currency)
   const formattedData = formatData(data)
-  const fileName = 'numerical_data_SEK.json'
-  writeToJsonFile(formattedData, fileName)
+  const fileName = 'numerical_data_USD.json'
+  writeToJsonFile(JSON.stringify(data), fileName)
 }
 
 // Run the main function
