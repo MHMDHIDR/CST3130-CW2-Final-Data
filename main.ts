@@ -1,78 +1,77 @@
-import {
+import { uploadData } from './utils/uploadData';
+import { getUnixTimestamp } from './utils/getUnixTimestamp';
+//---- import get Data functions
+import { getExchangeData } from './utils/getExchangeData';
+import { getTextData } from './utils/getTextData';
+import type {
   MetaDataType,
   TextDataType,
   currenciesType,
   exchangeDateType,
   textDataSummaryType
-} from './utils/types'
-import { uploadData } from './utils/uploadData'
-import { getUnixTimestamp } from './utils/getUnixTimestamp'
+} from './utils/types';
 
-//---- import get Data functions
-import { getExchangeData } from './utils/getExchangeData'
-import { getTextData } from './utils/getTextData'
+const currencies: currenciesType[] = ['USD', 'GBP', 'AMD', 'PHP', 'SEK'];
 
-const currencies: currenciesType[] = ['USD', 'GBP', 'AMD', 'PHP', 'SEK']
-
-async function getExchangeRates() {
+async function getExchangeRates(): Promise<void> {
   try {
     for await (const toCurrency of currencies) {
-      const data = (await getExchangeData(toCurrency)) as MetaDataType
-      const timeSeriesFXDaily = data['Time Series FX (Daily)'] ?? null
+      const data = (await getExchangeData(toCurrency)) as MetaDataType;
+      const timeSeriesFXDaily = data['Time Series FX (Daily)'] ?? null;
 
       if (timeSeriesFXDaily && Object.keys(timeSeriesFXDaily).length > 0) {
         for await (const date of Object.keys(timeSeriesFXDaily)) {
-          const unixTime = new Date(date).getTime()
-          const highValue = timeSeriesFXDaily[date]['2. high']
+          const unixTime: number = new Date(date).getTime();
+          const highValue: string = timeSeriesFXDaily[date]['2. high'];
 
           // Store data in dynamoDB
           await uploadData('QRExchangeRates', {
             exTimestamp: unixTime,
             toCurrency,
             price: highValue
-          } as exchangeDateType)
+          } as exchangeDateType);
         }
       } else {
-        console.error(`No exchange data to --> ${toCurrency}`)
-        console.log('-----------------------------------')
+        console.error(`No exchange data to --> ${toCurrency}`);
+        console.log('-----------------------------------');
       }
     }
   } catch (error) {
-    console.error(error)
-    throw new Error(`Unable to get exchange rates for currencies`)
+    console.error(error);
+    throw new Error(`Unable to get exchange rates for currencies`);
   }
 }
 
-async function getSummaryTextData() {
+async function getSummaryTextData(): Promise<void> {
   try {
     for await (const toCurrency of currencies) {
-      const data = (await getTextData(toCurrency)) as TextDataType
-      const news = data['feed']
+      const data = (await getTextData(toCurrency)) as TextDataType;
+      const news: textDataSummaryType[] = data['feed'];
 
       if (news && news.length > 0) {
         for await (const article of news) {
-          const { summary, time_published } = article
+          const { summary, time_published } = article;
 
           // Store data in dynamoDB
           await uploadData('ExchangesTextData', {
             Currency: toCurrency,
             summary,
             TimePublished: getUnixTimestamp(String(time_published))
-          } as textDataSummaryType)
+          } as textDataSummaryType);
         }
       } else {
-        console.error(`No Text data for --> ${toCurrency}`)
-        console.log('-----------------------------------')
+        console.error(`No Text data for --> ${toCurrency}`);
+        console.log('-----------------------------------');
       }
     }
   } catch (error) {
-    console.error(error)
-    throw new Error(`Unable to get text data for currencies`)
+    console.error(error);
+    throw new Error(`Unable to get text data for currencies`);
   }
 }
 
 // A function to getExchangeRates
-getExchangeRates()
+getExchangeRates();
 
 // A function to get text data
-// getSummaryTextData()
+getSummaryTextData();
