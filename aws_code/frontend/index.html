@@ -117,10 +117,13 @@
 
     // Handle received messages
     connection.onmessage = function (msg) {
+        console.log(JSON.parse(msg.data))
+
         // Parse the received data
         let numericalData = JSON.parse(msg.data).numericalData.numerical;
         let sentimentData = JSON.parse(msg.data).sentimentData.sentiment.y;
         let numericalPredictions = JSON.parse(msg.data).numericalData.predictions;
+
 
         // Calculate occurrences of Positive, Neutral, and Negative sentiments
         let positiveCount = 0;
