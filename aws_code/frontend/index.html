@@ -118,7 +118,6 @@
     // Handle received messages
     connection.onmessage = function (msg) {
         console.log('Received message: ' + msg.data);
-        let initialMessages = msg.data
 
         // Parse the received data
         let numericalData = JSON.parse(msg.data).numericalData.numerical;
@@ -174,8 +173,6 @@
         myDivPlaceholder.classList.add('hidden');
         myPlotlyDiv.classList.remove('hidden');
         mySentimentPlotlyDiv.classList.remove('hidden');
-
-        console.log('initialMessages :', initialMessages);
 
         // Plot numerical data
         Plotly.newPlot('myPlotlyDiv', [plotNumericalData, plotPredictionData], {
