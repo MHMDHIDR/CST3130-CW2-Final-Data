@@ -118,6 +118,7 @@
     // Handle received messages
     connection.onmessage = function (msg) {
         console.log('Received message: ' + msg.data);
+        let initialMessages = msg.data
 
         // Parse the received data
         let numericalData = JSON.parse(msg.data).numericalData.numerical;
@@ -145,14 +146,14 @@
         let neutralPercentage = (neutralCount / total) * 100;
         let negativePercentage = (negativeCount / total) * 100;
 
-        // Plot data
+        // Numerical data structure
         let plotNumericalData = {
             x: numericalData?.x, y: numericalData?.y,
             name: 'Original', type: 'line',
             marker: { color: 'rgb(70, 0, 200)', size: 12 }
         };
 
-        // Push x values for predicted data based on the length of numerical data x values
+        // Pushing the predicted data to the plot
         let plotPredictionData = {
             // Populate x values for predicted data using the numericalPredictions x values ( dates )
             x: numericalPredictions.x,
@@ -161,8 +162,7 @@
             marker: { color: 'rgb(255, 0, 0)', size: 12 }
         };
 
-
-        // Plotting sentiment analysis data
+        // sentiment analysis data structure
         let plotSentimentData = [{
             values: [positivePercentage, neutralPercentage, negativePercentage],
             labels: ['Positive', 'Neutral', 'Negative'],
@@ -174,6 +174,8 @@
         myDivPlaceholder.classList.add('hidden');
         myPlotlyDiv.classList.remove('hidden');
         mySentimentPlotlyDiv.classList.remove('hidden');
+
+        console.log('initialMessages :', initialMessages);
 
         // Plot numerical data
         Plotly.newPlot('myPlotlyDiv', [plotNumericalData, plotPredictionData], {
@@ -206,7 +208,6 @@
             showlegend: false,
             grid: { rows: 1, columns: 1 }
         });
-
     }
 
 
