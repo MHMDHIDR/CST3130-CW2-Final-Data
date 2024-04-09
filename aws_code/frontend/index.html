@@ -117,6 +117,8 @@
 
     // Handle received messages
     connection.onmessage = function (msg) {
+        console.log('Received message: ' + msg.data);
+
         // Parse the received data
         let numericalData = JSON.parse(msg.data).numericalData.numerical;
         let sentimentData = JSON.parse(msg.data).sentimentData.sentiment.y;
