@@ -8,61 +8,49 @@ import {
   ApiGatewayManagementApiClient,
   PostToConnectionCommand
 } from '@aws-sdk/client-apigatewaymanagementapi';
+import { getData } from 'database.mjs';
 
 //Create client
 const client = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(client);
 
 export const handler = async event => {
-  console.log(JSON.stringify(event));
   try {
-    let numericalData = [];
-    let sentimentData = [];
+    let data;
 
-    //Extract data from event
-    for (let record of event.Records) {
-      if (record.eventName === 'INSERT') {
-        if (record.dynamodb.NewImage.exTimestamp) {
-          // get a hold of that data
-          console.log('record -->', JSON.stringify(record));
+    // for (let record of event.Records) {
+    if (record.eventName === 'INSERT') {
+      if (record.dynamodb.NewImage.exTimestamp) {
+        // get a hold of that data
+        const toCurrency = record.dynamodb.NewImage.toCurrency.S;
 
-          const exTimestamp = Number(record.dynamodb.NewImage.exTimestamp.N);
-          const toCurrency = record.dynamodb.NewImage.toCurrency.S;
-          const price = record.dynamodb.NewImage.price.S;
+        data = await getData(toCurrency);
+        data.currency = toCurrency;
+      } else {
+        // get a hold of that data
+        const Currency = record.dynamodb.NewImage.Currency.S;
 
-          numericalData.push({ toCurrency, exTimestamp, price });
-        } else {
-          // get a hold of that data
-          console.log('record -->', JSON.stringify(record));
-
-          const TimePublished = Number(record.dynamodb.NewImage.TimePublished.N);
-          const Currency = record.dynamodb.NewImage.Currency.S;
-          const sentiment = record.dynamodb.NewImage.sentiment.N;
-
-          sentimentData.push({ Currency, TimePublished, sentiment });
-        }
+        data = await getData(Currency);
+        data.currency = Currency;
       }
     }
-
-    console.log('(numericalData) Message: ', numericalData);
-    console.log('(sentimentData) Message: ', sentimentData);
-
-    //Get promises to send messages to connected clients
-    let sendMsgPromises = await getSendMessagePromises({
-      type: 'numericalAndSentiment',
-      numericalData,
-      sentimentData
-    });
-
-    //Execute promises
-    await Promise.all(sendMsgPromises);
   } catch (err) {
     return { statusCode: 500, body: 'Error: ' + JSON.stringify(err) };
   }
 
-  //Success
-  return { statusCode: 200, body: 'Data sent successfully.' };
+  //Is data defined, if so, broadcast new data
+  if (data) {
+    //Get promises to send messages to connected clients
+    let sendMsgPromises = await getSendMessagePromises(JSON.stringify(data));
+  }
+  //otherwise do nothing
+
+  //Execute promises
+  await Promise.all(sendMsgPromises);
 };
+
+//Success
+return { statusCode: 200, body: 'Data sent successfully.' };
 
 // Get the IDs for the connected clients
 export async function getConnectionIds() {
@@ -103,17 +91,4 @@ export async function getSendMessagePromises(message) {
   });
 
   return msgPromiseArray;
-}
-
-// Deleting the specified connection ID
-export async function deleteConnectionId(connectionId) {
-  console.log('Deleting connection Id: ' + connectionId);
-
-  const deleteCommand = new DeleteCommand({
-    TableName: 'WebSocket',
-    Key: {
-      ConnectionId: connectionId
-    }
-  });
-  return docClient.send(deleteCommand);
 }
